@@ -14,13 +14,17 @@ import java.util.UUID;
 public class SenderSource {
 
     public static void main(String[] args) throws JsonProcessingException {
+        // 1. Сформируем тело запроса, которое необходимо отправить во внешнюю АС
         User user = new User();
         user.setName("Alice");
         user.setCount(999);
-        HttpSenderRequest httpSenderRequest = new HttpSenderRequest();
-        httpSenderRequest.setId(UUID.randomUUID());
+        // 2. Конвертнем тело запроса для внешней АС в строку, чтобы потом подложить тело в HttpSenderRequest
         ObjectMapper objectMapper = new ObjectMapper();
         String userAsString = objectMapper.writeValueAsString(user);
+
+        // 3. Сформируем объект HttpSenderRequest с инф-ей о запросе, объект httpSenderRequest будет передан сендеру
+        HttpSenderRequest httpSenderRequest = new HttpSenderRequest();
+        httpSenderRequest.setId(UUID.randomUUID());
         httpSenderRequest.setMethod("POST");
         httpSenderRequest.setUrl("http://localhost:8081/test-sender-json");
         Map<String, String> headersMap = new HashMap<>();
@@ -32,6 +36,7 @@ public class SenderSource {
         headers.add("Content-Type", "application/json");
         HttpEntity<HttpSenderRequest> httpEntity = new HttpEntity<>(httpSenderRequest, headers);
 
+        // 4. Отправляем запрос на сендера, сендер выцепит инф-ию о запросе из HttpSenderRequest, сформирует окончательный HTTP-запрос и отправит его во внешнюю АС, т.е. в SenderReceiverController
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> responseEntity = restTemplate.postForEntity("http://localhost:8080/fintech-webhook-sender/rest/send-to-external-system", httpEntity, String.class);
         int i = 0;
