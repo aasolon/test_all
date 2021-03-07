@@ -1,0 +1,16 @@
+###
+Sender
+###
+POST http://localhost:8080/fintech-webhook-sender/rest/send-to-external-system
+Content-Type: application/json
+
+{
+  "id": "22a6dd81-103a-4d3a-8e9b-0ba4b527f5f6",
+  "method": "POST",
+  "headers": {
+    "Content-Type": "application/xml"
+  },
+  "url": "http://localhost:8081/test-sender-xml",
+
+  "body": "{\n  \"name\": \"Alex\",\n  \"count\": 999\n}"
+}
