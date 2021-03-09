@@ -36,9 +36,9 @@ public class SenderSource {
         headers.add("Content-Type", "application/json");
         HttpEntity<HttpSenderRequest> httpEntity = new HttpEntity<>(httpSenderRequest, headers);
 
-        // 4. Отправляем запрос на сендера, сендер выцепит инф-ию о запросе из HttpSenderRequest, сформирует окончательный HTTP-запрос и отправит его во внешнюю АС, т.е. в SenderReceiverController
+        // 4. Отправим запрос на сендера, сендер выцепит инф-ию о запросе из HttpSenderRequest, сформирует окончательный HTTP-запрос и отправит его во внешнюю АС, т.е. в SenderReceiverController
         RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<String> responseEntity = restTemplate.postForEntity("http://localhost:8080/fintech-webhook-sender/rest/send-to-external-system", httpEntity, String.class);
+        HttpSenderResponse httpSenderResponse = restTemplate.postForObject("http://localhost:8080/fintech-webhook-sender/rest/send-to-external-system", httpEntity, HttpSenderResponse.class);
         int i = 0;
     }
 
@@ -120,6 +120,61 @@ public class SenderSource {
 
         public void setBody(String body) {
             this.body = body;
+        }
+    }
+
+    private static class HttpSenderResponse {
+        /**
+         * Уникальный идентификатор запроса
+         */
+        private UUID id;
+
+        /**
+         * Код ответа
+         */
+        private int code;
+
+        /**
+         * Тело ответа
+         */
+        private String body;
+
+        /**
+         * Заголовки ответа
+         */
+        private Map<String,String> headers;
+
+
+        public UUID getId() {
+            return id;
+        }
+
+        public void setId(UUID id) {
+            this.id = id;
+        }
+
+        public int getCode() {
+            return code;
+        }
+
+        public void setCode(int code) {
+            this.code = code;
+        }
+
+        public String getBody() {
+            return body;
+        }
+
+        public void setBody(String body) {
+            this.body = body;
+        }
+
+        public Map<String, String> getHeaders() {
+            return headers;
+        }
+
+        public void setHeaders(Map<String, String> headers) {
+            this.headers = headers;
         }
     }
 }
