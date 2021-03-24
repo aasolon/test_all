@@ -1,0 +1,15 @@
+POST http://localhost:8081/test-bean-validation
+Content-Type: application/json
+
+{
+  "name": "asd"
+}
+
+###
+
+POST http://localhost:8081/test-bean-validation
+Content-Type: application/json
+
+{
+  "name": null
+}
