@@ -35,7 +35,17 @@ public class SimpleController {
 
     @GetMapping("/hello")
     public String hello() {
-        return "Heeello hi!";
+        return "Heeello hi! 111111111111";
+    }
+
+    @GetMapping("/hello2")
+    public String hello2() {
+        return "Heeello hi! 2222222222";
+    }
+
+    @GetMapping("/hello3")
+    public String hello3() {
+        return "Heeello hi! 33333333333";
     }
 
     // https://localhost:10012/ott-service/TokenJsonRpcFacade.json
@@ -45,7 +55,7 @@ public class SimpleController {
     }
 
     @GetMapping("/hello_2")
-    public String hello2() throws IOException {
+    public String hello_2() throws IOException {
         log.info(" /hello_2 received request");
 
         HttpGet get = new HttpGet("http://localhost:8081/hello_with_sleep");

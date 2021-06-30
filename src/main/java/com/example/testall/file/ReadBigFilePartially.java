@@ -1,4 +1,4 @@
-package com.example.testall.filerest;
+package com.example.testall.file;
 
 import org.springframework.http.HttpMethod;
 import org.springframework.util.StreamUtils;
@@ -8,7 +8,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-public class FileMain {
+public class ReadBigFilePartially {
 
     public static void main(String[] args) throws IOException {
         File file = File.createTempFile("download", "tmp");

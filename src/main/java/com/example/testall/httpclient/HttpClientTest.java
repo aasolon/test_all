@@ -8,7 +8,6 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
 public class HttpClientTest {
 
@@ -25,16 +24,16 @@ public class HttpClientTest {
                 .setMaxConnPerRoute(2)
                 .setMaxConnTotal(2)
 //                .setConnectionTimeToLive(5, TimeUnit.SECONDS) // время жизни соединения в пуле, контролируемое исключительно на стороне клиента
-                .evictIdleConnections(5, TimeUnit.SECONDS) // если соединение простаивало какое-то время (пусть даже и не закрыто сервером), то оно будет закрыто
-                .evictExpiredConnections() // если соединение было разорвано на стороне сервера, то оно будет закрыто (при этом время по умолчанию 10 сек или же берется из evictIdleConnections),
+//                .evictIdleConnections(5, TimeUnit.SECONDS) // если соединение простаивало какое-то время (пусть даже и не закрыто сервером), то оно будет закрыто
+//                .evictExpiredConnections() // если соединение было разорвано на стороне сервера, то оно будет закрыто (при этом время по умолчанию 10 сек или же берется из evictIdleConnections),
                                            // при этом простаивающие соединения не афектятся
                 // PoolingHttpClientConnectionManager.setValidateAfterInactivity раньше перед выдачей соединения из пула оно всегда проверялось,
                                                                               // а теперь оно проверяется только если прошло больше указанного кол-ва  ms
                 .build();
 
         HttpGet get1 = new HttpGet("http://localhost:8081/hello");
-        HttpGet get2 = new HttpGet("http://localhost:8081/hello");
-        HttpGet get3 = new HttpGet("http://localhost:8081/hello");
+        HttpGet get2 = new HttpGet("http://localhost:8081/hello2");
+        HttpGet get3 = new HttpGet("http://localhost:8081/hello3");
 
         MultiHttpClientConnThread thread1 = new MultiHttpClientConnThread(client, get1);
         MultiHttpClientConnThread thread2 = new MultiHttpClientConnThread(client, get2);
