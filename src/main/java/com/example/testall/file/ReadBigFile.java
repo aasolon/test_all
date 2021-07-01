@@ -16,6 +16,7 @@ public class ReadBigFile {
                 "http://localhost:8080/download-file",
                 HttpMethod.GET,
                 request -> request.getHeaders().set("X-URL", "http://localhost:8081"),
+//                null,
                 clientHttpResponse -> {
                     File file = File.createTempFile("download", "tmp");
                     StreamUtils.copy(clientHttpResponse.getBody(), new FileOutputStream(file, true));
