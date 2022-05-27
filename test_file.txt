@@ -1,1 +1,1 @@
-asd
+asd content_of_test_file

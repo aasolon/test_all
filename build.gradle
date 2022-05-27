@@ -1,28 +1,93 @@
 plugins {
-    id 'org.springframework.boot' version '2.4.3'
+    id 'org.springframework.boot' version '2.5.10'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id 'java'
 }
 
 group = 'com.example'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '1.8'
+sourceCompatibility = '11'
 
 repositories {
+//    maven {
+//        url "https://nexus.sigma.sbrf.ru/nexus/content/groups/public"
+//        allowInsecureProtocol = true
+//    }
+    mavenLocal()
+
     mavenCentral()
 }
 
+ext['h2.version'] = '1.4.197'
+
+dependencyManagement {
+    imports {
+        mavenBom("org.springframework.cloud:spring-cloud-dependencies:2020.0.4")
+    }
+}
+
 dependencies {
+//    JETTY
+//    implementation ('org.springframework.boot:spring-boot-starter-web') {
+//        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
+//    }
+//    implementation "org.springframework.boot:spring-boot-starter-jetty"
+
+//  TOMCAT
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.cloud:spring-cloud-starter-sleuth'
+
+
+
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.12'
     implementation group: 'commons-io', name: 'commons-io', version: '2.9.0'
+    implementation 'com.google.guava:guava:31.0.1-jre'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'org.jooq:jooq:3.13.4'
+    implementation 'org.jooq:jooq-meta:3.13.4'
+    implementation 'org.jooq:jooq-codegen:3.13.4'
 
     implementation('com.github.briandilley.jsonrpc4j:jsonrpc4j:1.6')
     implementation('org.springframework.boot:spring-boot-starter-validation')
     implementation('org.apache.commons:commons-lang3')
+    implementation 'commons-fileupload:commons-fileupload:1.4'
+    implementation 'org.bouncycastle:bcpkix-jdk15on:1.69'
+
+    implementation 'org.apache.ignite:ignite-core:2.10.0'
+    implementation 'org.apache.ignite:ignite-spring:2.10.0'
+//
+//    implementation 'org.springframework.boot:spring-boot-starter-cache'
+
+    runtimeOnly 'com.h2database:h2'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    implementation 'org.springframework.kafka:spring-kafka:2.8.1'
+
+//    implementation('ru.sberbank.pprb.sbbol.digitalapi:services:DEV-SNAPSHOT')
+
+
+    // раскомментировать, чтобы автоматом поднялся Ignnite
+//    implementation 'org.apache.ignite:ignite-spring-boot-autoconfigure-ext:1.0.0'
 }
 
 test {
     useJUnitPlatform()
 }
+
+// When you apply the io.spring.dependency-management plugin, Spring Boot’s plugin will automatically import the spring-boot-dependencies bom from the version of Spring Boot that you are using.
+// This provides a similar dependency management experience to the one that’s enjoyed by Maven users. For example, it allows you to omit version numbers when declaring dependencies that are managed in the bom.
+// А чтобы вывести список версий, которые приносит с собой spring-boot-dependencies BOM, можно использовать кастомную таску list-spring-boot-dependency-bom-version
+// Список версий хранится в переменной dependencyManagement.importedProperties (https://docs.spring.io/dependency-management-plugin/docs/current/reference/html/#accessing-properties)
+// ./gradlew list-spring-boot-dependency-bom-version
+tasks.register("list-spring-boot-dependency-bom-version") {
+    group = 'Introspection'
+    description = 'Print properties from all BOMs'
+    doLast {
+        println dependencyManagement.importedProperties
+    }
+}
+
+
+

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/util https://www.springframework.org/schema/util/spring-util.xsd">
+
+    <bean id="someXmlSpringObject" class="com.example.testall.xmlspring.SomeXmlSpringObject">
+        <property name="list" ref="someString"/>
+    </bean>
+
+    <util:list id="someStringList" value-type="java.lang.String">
+        <value>asd_1</value>
+        <value>asd_2</value>
+    </util:list>
+
+    <bean id="someString" class="java.lang.String">
+        <constructor-arg value="asd_3"/>
+    </bean>
+
+</beans>

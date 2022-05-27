@@ -13,10 +13,9 @@ public class ReadBigFile {
     public static void main(String[] args) throws IOException {
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.execute(
-                "http://localhost:8080/download-file",
+                "http://localhost:8082/download-file-proxy",
                 HttpMethod.GET,
-                request -> request.getHeaders().set("X-URL", "http://localhost:8081"),
-//                null,
+                null,
                 clientHttpResponse -> {
                     File file = File.createTempFile("download", "tmp");
                     StreamUtils.copy(clientHttpResponse.getBody(), new FileOutputStream(file, true));

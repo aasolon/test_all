@@ -2,7 +2,16 @@ GET http://localhost:8082/download-file
 #Range: bytes=0-1
 ###
 
-GET http://localhost:8081/hello
+GET http://localhost:9876/hello
+
+###
+
+GET http://localhost:9876/proxy-get-request
+X-Request-Id: 112233
+
+###
+
+GET http://localhost:9876/date-header
 
 ###
 
@@ -10,3 +19,114 @@ GET http://localhost:8082/hello
 
 ###
 POST http://localhost:8082/actuator/gateway/refresh
+
+###
+GET http://localhost:8081/get-result-and-audit
+
+###
+POST http://localhost:10012/sowa_validate_json
+Content-Type: application/json
+
+{
+  "field_11": "value_1",
+  "field_2": "value_2",
+  "field_3": "asd"
+}
+
+###
+POST http://localhost:10012/sowa_validate_xsd
+Content-Type: application/xml
+
+<Request xmlns="http://bssys.com/upg/request" mySenderKey="asd"/>
+
+###
+POST http://localhost:10012/ott-service/TokenJsonRpcFacade.json
+Content-Type: application/json
+
+{
+  "a": "b"
+}
+
+###
+GET http://localhost:9876/get-or-create-ignite-cache
+
+###
+GET http://localhost:9876/get-ignite-cache-statistics
+
+###
+GET http://localhost:9876/destroy-ignite-cache
+
+###
+GET http://localhost:9876/get-or-create-ignite-cache-with-peer-class-loading
+
+###
+GET http://localhost:9876/not-exists-url
+
+###
+POST http://sender:1111/post
+Content-Type: application/x-www-form-urlencoded
+
+param1=Param1+some+value&param2=%3Casd%3E
+
+
+###
+
+GET http://localhost:9876/test-kafka
+
+
+
+
+
+
+
+###
+GET http://localhost:10013/get-some-json
+
+###
+GET http://localhost:10013/get-empty-json
+
+###
+GET http://localhost:10013/get-invalid-json
+
+
+
+
+###
+GET http://localhost:10013/get-some-xml
+
+###
+GET http://localhost:10013/get-text-xml
+
+###
+GET http://localhost:10013/get-empty-xml
+
+###
+GET http://localhost:10013/get-invalid-xml
+
+
+
+
+
+
+
+
+
+###
+ GET http://localhost:10013/get-empty-body
+
+###
+GET http://localhost:10013/with-param?param1=asdsad
+
+###
+GET http://localhost:10013/download-virus
+
+###
+GET http://localhost:9876/download-base64-virus
+
+###
+GET http://localhost:10013/fake-response-content-type
+
+
+
+###
+GET http://httpbin.org/get
