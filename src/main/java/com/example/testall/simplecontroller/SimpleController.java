@@ -13,7 +13,6 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,9 +21,23 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileSystem;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,7 +65,7 @@ public class SimpleController {
 
     @GetMapping("/hello")
     public String hello(@RequestParam(required = false)String param1, @RequestHeader HttpHeaders headers) {
-        log.info("AAAAAAAAAAAAAAAAAAA =========================================== Hello");
+        log.info("AAAAAAAAAAAAAAAAAAA =========================================== Hello\n" + getHeadersAsString(headers));
         return "Heeello hi! 111111111111";
     }
 
@@ -85,7 +98,7 @@ public class SimpleController {
     @GetMapping("/hello_with_sleep")
     public String helloWithSleep() throws InterruptedException {
         log.info(" /hello_with_sleep received request");
-        Thread.sleep(30 * 1000);
+        Thread.sleep(1200 * 1000);
         log.info(" /hello_with_sleep send response");
         return "Heeello hi!";
     }
@@ -224,8 +237,68 @@ public class SimpleController {
 
     @GetMapping("/proxy-get-request")
     public String proxyGetRequest(@RequestHeader HttpHeaders headers) {
-        log.info("BBBBBBBBBBBBBBBBBB =========================================== proxy-get-request");
+        log.info("BBBBBBBBBBBBBBBBBB =========================================== proxy-get-request\n" + getHeadersAsString(headers));
         String hello = commonRestTemplate.getForObject("http://localhost:9876/hello", String.class);
         return hello;
+    }
+
+    private String getHeadersAsString(HttpHeaders headers) {
+        StringBuilder builder = new StringBuilder();
+        for (Map.Entry<String, List<String>> entry : headers.entrySet()) {
+            builder.append(entry.getKey()).append(": ").append(entry.getValue()).append("\n");
+        }
+        return builder.toString();
+    }
+
+    @GetMapping("/read-jar-file")
+    public void readJarFile() throws IOException, URISyntaxException {
+        Path path = Paths.get("com/bssys/response.xsd");
+        boolean exists = Files.exists(path, new LinkOption[0]);
+
+        try (InputStream in = getClass().getClassLoader().getResourceAsStream("com/bssys/response.xsd");
+             BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
+            // Use resource
+            String s = reader.readLine();
+            int i = 0;
+        }
+
+        try (InputStream in = getClass().getResourceAsStream("/com/bssys/response.xsd");
+             BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
+            // Use resource
+            String s = reader.readLine();
+            int i = 0;
+        }
+
+        // getClass().getResource() = file:/Users/17230726/IdeaProjects/test_all/build/resources/main/com/bssys/response.xsd
+        URL resource1 = getClass().getResource("/com/bssys/response.xsd");
+        System.out.println("resource1 getResource result of type URL = " + resource1);
+        URI uri1 = resource1.toURI();
+        InputStream resourceAsStream = getClass().getResourceAsStream("/com/bssys/response.xsd");
+        System.out.println("resourceAsStream = " + IOUtils.toString(resourceAsStream, StandardCharsets.UTF_8));
+
+//        uri1 = new URI("jar:file:/Users/17230726/IdeaProjects/test_all/build/libs/test_all-0.0.1-SNAPSHOT.jar!/BOOT-INF/classes!/com/bssys/response.xsd");
+        try (FileSystem zipfs = FileSystems.newFileSystem(uri1, Collections.emptyMap())) {
+            Path path1 = Paths.get(uri1);
+            System.out.println("path1 = " + path1);
+            List<String> strings = Files.readAllLines(path1);
+            System.out.println("strings = " + strings);
+        }
+
+        int i = 0;
+    }
+
+    @PostMapping(value = "/v1/files/upload", produces = "application/json", consumes = "application/json")
+    public String fintechUploadFile(HttpServletRequest request, @RequestBody String body) {
+        return "{\"fileId\": 123, \"url\": 321}";
+    }
+
+    @PostMapping("/mandatory-accept-header")
+    public String mandatoryAcceptHeader(@RequestHeader(value = "Accept") String accept) {
+        return "OK";
+    }
+
+    @PostMapping("/civ6")
+    public void acceptCiv6Request(String request) {
+        log.info(request);
     }
 }

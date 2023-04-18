@@ -21,18 +21,18 @@ public class UploadSingleFile {
     private static void uploadMultipart() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-        headers.set("X-URL", "http://localhost:8081");
+        headers.set("X-URL", "http://localhost:9876");
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-        body.add("file", new FileSystemResource("VID_20190524_215856.mp4"));
-//        body.add("file", new FileSystemResource("test_file.txt"));
+//        body.add("file", new FileSystemResource("VID_20190524_215856.mp4"));
+        body.add("filename1", new FileSystemResource("test_file.txt"));
         body.add("111", "222");
 
         HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
 
-//        String serverUrl = "http://localhost:8082/single-file-upload";
-        String serverUrl = "http://localhost:8082/apache-commons-upload-proxy";
-//        String serverUrl = "http://localhost:8082/apache-commons-upload-1";
-//        String serverUrl = "http://localhost:8082/apache-commons-upload-to-file";
+        String serverUrl = "http://localhost:9876/single-file-upload";
+//        String serverUrl = "http://localhost:9876/apache-commons-upload-proxy";
+//        String serverUrl = "http://localhost:9876/apache-commons-upload-1";
+//        String serverUrl = "http://localhost:9876/apache-commons-upload-to-file";
 
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response = restTemplate.postForEntity(serverUrl, requestEntity, String.class);
@@ -50,7 +50,7 @@ public class UploadSingleFile {
         FileSystemResource fileSystemResource = new FileSystemResource("test_file.txt");
 //        FileSystemResource fileSystemResource = new FileSystemResource("VID_20190524_215856.mp4");
         HttpEntity requestEntity = new HttpEntity<>(fileSystemResource, headers);
-        ResponseEntity<String> response = restTemplate.exchange("http://localhost:8082/octet-stream",
+        ResponseEntity<String> response = restTemplate.exchange("http://localhost:9876/octet-stream",
                 HttpMethod.POST, requestEntity, String.class);
     }
 }

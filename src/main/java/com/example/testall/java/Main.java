@@ -1,8 +1,20 @@
 package com.example.testall.java;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.lang3.time.DateUtils;
+import org.apache.commons.lang3.time.FastDateFormat;
 
-import java.nio.charset.StandardCharsets;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -10,15 +22,34 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.TreeSet;
 import java.util.UUID;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Main {
 
-    public static void main(String[] args) {
-        testComputeIfAbsent();
+    private static final FastDateFormat DATE_TIME_FORMAT = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss.SSS");
+
+
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
+        testUpgVersionSublist();
+
+//        testJavaSerialization();
+
+//        testJackson();
+
+//        testFile();
+
+//        testLongEquals();
+
+//        testStringJoin();
+
+//        testFastDateFormat();
+
+//        testRegExp();
+
+//        testComputeIfAbsent();
 
 //        testSwitchCase();
 
@@ -26,7 +57,112 @@ public class Main {
 
 //        testComparator();
 
+//        testComparator2();
+
         int i1 = 0;
+    }
+
+    private static void testUpgVersionSublist() {
+        List<Integer> REVERSE_SORTED_VERSIONS = Arrays.asList(35, 34, 33, 32);
+        List<Integer> beforeVersions = REVERSE_SORTED_VERSIONS.subList(REVERSE_SORTED_VERSIONS.indexOf(33), REVERSE_SORTED_VERSIONS.size());
+        int i = 0;
+    }
+
+    private static void testJavaSerialization() throws IOException, ClassNotFoundException {
+//        SomeSerializableObject someSerializableObject = new SomeSerializableObject("1", "2", "3", "4", "5", "6");
+
+        String fileName = "serialized_in_file_some_object.txt";
+
+//        FileOutputStream fileOutputStream = new FileOutputStream(fileName);
+//        ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+//        objectOutputStream.writeObject(someSerializableObject);
+//        objectOutputStream.flush();
+//        objectOutputStream.close();
+
+        FileInputStream fileInputStream = new FileInputStream(fileName);
+        ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+        SomeSerializableObject someSerializableObject_2 = (SomeSerializableObject) objectInputStream.readObject();
+        objectInputStream.close();
+
+        int i = 0;
+    }
+
+    private static class Person {
+        private int count;
+        private String name;
+        private boolean isEnabled;
+
+        public int getCount() {
+            return count;
+        }
+
+        public void setCount(int count) {
+            this.count = count;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public boolean isEnabled() {
+            return isEnabled;
+        }
+
+        public void setEnabled(boolean enabled) {
+            isEnabled = enabled;
+        }
+    }
+
+    private static void testJackson() throws JsonProcessingException {
+        String str = "{\"count\": 11, \"name\": \"Vasya\"}";
+        Person person = new ObjectMapper().readValue(str, Person.class);
+
+        String str2 = "{\"count\": 22, \"name\": \"Petya\", \"enabled\": true}";
+        Person person2 = new ObjectMapper().readValue(str2, Person.class);
+
+        int i = 0;
+    }
+
+    private static void testFile() throws IOException {
+        Path path = Paths.get("com/bssys/response.xsd");
+        boolean exists = Files.exists(path, new LinkOption[0]);
+
+        try (InputStream in = Main.class.getResourceAsStream("com/bssys/response.xsd");
+             BufferedReader reader = new BufferedReader(new InputStreamReader(in))) {
+            // Use resource
+            String s = reader.readLine();
+            int i = 0;
+        }
+
+        int i = 0;
+    }
+
+    private static void testLongEquals() {
+        Long a = 1L;
+        Long b = null;
+        a.equals(b);
+    }
+
+    private static void testStringJoin() {
+        String join = String.join(";", null, null);
+        System.out.println("Join result = " + join);
+    }
+
+    private static void testFastDateFormat() {
+        Date date = new Date();
+        String format = DATE_TIME_FORMAT.format(date);
+        System.out.println("Formatted date = " + format);
+    }
+
+    private static void testRegExp() {
+        Pattern p = Pattern.compile("[0-9а-яА-ЯёË]*");
+        Matcher m = p.matcher("Артём");
+        boolean b = m.matches();
+        System.out.println("================= regexp result = " + b);
     }
 
     public static void testComputeIfAbsent() {
@@ -93,7 +229,35 @@ public class Main {
                 .max((e1, e2) -> VERSION_COMPARATOR.compare(e1.getList(), e2.getList())).orElse(null);
         SomeObject someObject = someObjects.stream()
                 .max(Comparator.comparing(SomeObject::getName)).orElse(null);
+    }
 
+    private static void testComparator2() {
+        List<SomeObject> someObjects = new ArrayList<>();
+
+        SomeObject someObject1 = new SomeObject();
+        someObject1.setName("AA");
+//        someObject1.setDate(new Date());
+        someObject1.setDate(null);
+
+
+        SomeObject someObject2 = new SomeObject();
+        someObject2.setName("BB");
+//        someObject2.setDate(DateUtils.addDays(new Date(), 1));
+        someObject2.setDate(null);
+
+
+        SomeObject someObject3 = new SomeObject();
+        someObject3.setName("CC");
+        someObject3.setDate(null);
+
+        someObjects.add(someObject1);
+        someObjects.add(someObject2);
+        someObjects.add(someObject3);
+
+//        SomeObject lastDateObject = Collections.max(someObjects, Comparator.comparing(SomeObject::getDate, Comparator.nullsFirst(Comparator.naturalOrder())));
+        SomeObject lastDateObject = someObjects.stream().max(Comparator.comparing(SomeObject::getDate, Comparator.nullsFirst(Comparator.naturalOrder()))).orElse(null);
+
+        int i = 0;
     }
 
     public static Date getNextWorkDay(Date date) {
@@ -105,6 +269,7 @@ public class Main {
     private static class SomeObject {
         private List<Integer> list;
         private String name;
+        private Date date;
 
         public List<Integer> getList() {
             return list;
@@ -120,6 +285,14 @@ public class Main {
 
         public void setName(String name) {
             this.name = name;
+        }
+
+        public Date getDate() {
+            return date;
+        }
+
+        public void setDate(Date date) {
+            this.date = date;
         }
     }
 

@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
@@ -36,8 +37,15 @@ import java.util.List;
 
 @RestController
 public class UploadController {
+
+    private final NativeWebRequest nativeWebRequest;
+
+    public UploadController(NativeWebRequest nativeWebRequest) {
+        this.nativeWebRequest = nativeWebRequest;
+    }
+
     @RequestMapping(path = "/single-file-upload", method = RequestMethod.POST)
-    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) throws IOException {
+    public ResponseEntity<String> uploadFile(@RequestParam(name = "filename1") MultipartFile file) throws IOException {
 
         byte[] bytes = file.getBytes();
 
@@ -111,8 +119,9 @@ public class UploadController {
         }
     }
 
-    @PostMapping("/apache-commons-upload-to-file")
-    public String uploadFileApacheCommonsUploadToFile(HttpServletRequest request) throws IOException, FileUploadException {
+    @PostMapping(value = "/apache-commons-upload-to-file", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public String uploadFileApacheCommonsUploadToFile() throws IOException, FileUploadException {
+        HttpServletRequest request = nativeWebRequest.getNativeRequest(HttpServletRequest.class);
         ServletFileUpload upload = new ServletFileUpload();
         FileItemIterator iterStream = upload.getItemIterator(request);
         while (iterStream.hasNext()) {

@@ -130,3 +130,53 @@ GET http://localhost:10013/fake-response-content-type
 
 ###
 GET http://httpbin.org/get
+
+
+###
+GET http://localhost:9876/hello_with_sleep
+
+###
+POST http://localhost:9876/v1/files/upload
+
+###
+POST http://localhost:9876/apache-commons-upload-to-file
+Content-Type: multipart/form-data; boundary=abcd
+
+--abcd
+Content-Disposition: form-data; name="text"; filename="input.txt"
+
+Text123
+--abcd--
+
+###
+### curl -v -F 'filename1=@/Users/17230726/IdeaProjects/test_all/test_file.txt' http://localhost:9876/single-file-upload
+### *   Trying 127.0.0.1:9876...
+### * Connected to localhost (127.0.0.1) port 9876 (#0)
+### > POST /single-file-upload HTTP/1.1
+### > Host: localhost:9876
+### > User-Agent: curl/7.79.1
+### > Accept: */*
+### > Content-Length: 220
+### > Content-Type: multipart/form-data; boundary=------------------------75c92102b1b9b35e
+### >
+### * We are completely uploaded and fine
+### * Mark bundle as not supporting multiuse
+### < HTTP/1.1 200
+### < Content-Type: text/plain;charset=UTF-8
+### < Content-Length: 10
+### < Date: Fri, 30 Dec 2022 15:00:39 GMT
+### <
+### * Connection #0 to host localhost left intact
+###
+POST http://localhost:9876/single-file-upload
+Content-Type: multipart/form-data; boundary=abcd
+
+--abcd
+Content-Disposition: form-data; name="filename1"; filename="input.txt"
+#Content-Type: text/plain
+
+TextAAA
+--abcd--
+
+###
+GET 185.149.245.40:9876/hello2

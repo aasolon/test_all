@@ -4,7 +4,6 @@ import com.example.testall.xmlspring.SomeXmlSpringObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
@@ -12,6 +11,7 @@ import org.springframework.context.annotation.ImportResource;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 @SpringBootApplication
 @EnableAsync
@@ -43,6 +43,12 @@ public class TestAllApplication {
     @Bean
     public RestTemplate commonRestTemplate() {
         return new RestTemplate();
+    }
+
+    @Bean(name = "multipartResolver")
+    public CommonsMultipartResolver multipartResolver() {
+        CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
+        return multipartResolver;
     }
 
 //    @Bean

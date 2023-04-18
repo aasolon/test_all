@@ -13,8 +13,8 @@ bin/kafka-topics.sh --create --topic request-topic --bootstrap-server localhost:
 Список топиков:
 bin/kafka-topics.sh --bootstrap-server localhost:9092 --list
 
-Producer:
-bin/kafka-console-producer.sh --topic request-topic --bootstrap-server localhost:9092_
+Запустить консольный Producer:
+bin/kafka-console-producer.sh --topic request-topic --bootstrap-server localhost:9092
 
-Consumer:
+Запустить консольный Consumer:
 bin/kafka-console-consumer.sh --topic request-topic --from-beginning --bootstrap-server localhost:9092

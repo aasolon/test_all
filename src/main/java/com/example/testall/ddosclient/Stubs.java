@@ -17,9 +17,9 @@ public class Stubs {
 
     private static final Logger log = LoggerFactory.getLogger(Stubs.class);
 
-    @GetMapping(value = "/check-access-token", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/v2/check-access-token", produces = MediaType.APPLICATION_JSON_VALUE)
     public String getAccessTokenInfo(@RequestParam String accessToken, @RequestHeader HttpHeaders headers) {
-        log.info("sleuth1 /get ===========================================================================================\n" +
+        log.info("/v2/check-access-token ===========================================================================================\n" +
                 "Headers:\n" +
                 getHeadersAsString(headers));
 
@@ -41,7 +41,8 @@ public class Stubs {
                 "  \"services\": [\n" +
                 "    \"PAYROLL\"\n" +
                 "  ],\n" +
-                "  \"epkId\": 1446349517043562433,\n" +
+                "  \"userEpkId\": 1446349517043562433,\n" +
+                "  \"clientEpkId\": 1446349517043562433,\n" +
                 "  \"digitalUserId\": \"6966888591978594305\",\n" +
                 "  \"digitalId\": \"6877890546340134913\",\n" +
                 "  \"clientId\": 111251,\n" +

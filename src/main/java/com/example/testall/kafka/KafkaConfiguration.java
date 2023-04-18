@@ -1,10 +1,7 @@
 package com.example.testall.kafka;
 
-import com.example.testall.simplecontroller.SimpleController;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
@@ -16,10 +13,8 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.listener.CommonLoggingErrorHandler;
 import org.springframework.kafka.listener.DefaultErrorHandler;
-import org.springframework.kafka.support.DefaultKafkaHeaderMapper;
-import org.springframework.kafka.support.ProducerListener;
+import org.springframework.kafka.support.SimpleKafkaHeaderMapper;
 import org.springframework.kafka.support.converter.MessagingMessageConverter;
 import org.springframework.util.backoff.FixedBackOff;
 
@@ -45,6 +40,11 @@ public class KafkaConfiguration {
         configProps.put(ProducerConfig.BUFFER_MEMORY_CONFIG, 1048576000);
         DefaultKafkaProducerFactory<String, String> kafkaProducerFactory = new DefaultKafkaProducerFactory<>(configProps);
         KafkaTemplate<String, String> stringStringKafkaTemplate = new KafkaTemplate<>(kafkaProducerFactory);
+
+        MessagingMessageConverter messagingMessageConverter = new MessagingMessageConverter();
+        messagingMessageConverter.setHeaderMapper(new SimpleKafkaHeaderMapper());
+        stringStringKafkaTemplate.setMessageConverter(messagingMessageConverter);
+
 //        stringStringKafkaTemplate.setProducerListener(new ProducerListener<>() {
 //            @Override
 //            public void onError(ProducerRecord<String, String> producerRecord, RecordMetadata recordMetadata, Exception exception) {
@@ -74,10 +74,18 @@ public class KafkaConfiguration {
 //        kafkaListenerContainerFactory.setMessageConverter(messageConverter);
 
         kafkaListenerContainerFactory.setConsumerFactory(kafkaConsumerFactory);
+
         kafkaListenerContainerFactory.setCommonErrorHandler(new DefaultErrorHandler(
                 new KafkaConsumerRecordRecoverer(),
                 new FixedBackOff(0, 0)
         ));
+
+//        MessagingMessageConverter messagingMessageConverter = new MessagingMessageConverter();
+//        DefaultKafkaHeaderMapper headerMapper = new DefaultKafkaHeaderMapper();
+//        headerMapper.addRawMappedHeader("objectHeader", true);
+//        messagingMessageConverter.setHeaderMapper(headerMapper);
+//        kafkaListenerContainerFactory.setMessageConverter(messagingMessageConverter);
+
         return kafkaListenerContainerFactory;
     }
 
