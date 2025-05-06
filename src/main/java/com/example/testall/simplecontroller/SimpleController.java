@@ -301,4 +301,32 @@ public class SimpleController {
     public void acceptCiv6Request(String request) {
         log.info(request);
     }
+
+    @PostMapping("/v2/event")
+    public void acceptV2Request(@RequestHeader HttpHeaders headers, @RequestBody String body) {
+        int i = 0;
+    }
+
+    @PostMapping("/digitalapi/gateway")
+    public ResponseEntity gateway429(){
+        return ResponseEntity.status(429).build();
+    }
+
+    @PostMapping("/ext/v1/oauth/token/introspect")
+    public ResponseEntity introspect() {
+        return ResponseEntity.internalServerError().body(1);
+    }
+
+    @PostMapping("push/project/CI02741778/split-by-ott")
+    public ResponseEntity audit(@RequestHeader HttpHeaders headers, @RequestBody String body) {
+        HttpHeaders responseHeaders = new HttpHeaders();
+//        responseHeaders.add(HttpHeaders.TRANSFER_ENCODING, "chunked");
+//        return ResponseEntity.ok().headers(responseHeaders).build();
+        return ResponseEntity.ok().body("ASD");
+    }
+
+    @PostMapping("/webhook")
+    public ResponseEntity getWithDateHeader(@RequestHeader HttpHeaders headers, @RequestBody Object body) {
+        return ResponseEntity.internalServerError().build();
+    }
 }

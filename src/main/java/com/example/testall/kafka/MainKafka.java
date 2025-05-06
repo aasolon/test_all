@@ -11,6 +11,7 @@ import org.springframework.messaging.support.MessageBuilder;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class MainKafka {
 
@@ -25,11 +26,20 @@ public class MainKafka {
 
         Map<String, Object> kafkaHeaders = new HashMap<>();
 //        kafkaHeaders.put(KafkaHeaders.TOPIC, "CI02591035CORPAPI.RESPONSEEVENT.V1");
-        kafkaHeaders.put(KafkaHeaders.TOPIC, "request-topic");
-        kafkaHeaders.put("ProtocolVersion", "V32");
-        kafkaHeaders.put("longHeader", 123L);
+        kafkaHeaders.put(KafkaHeaders.TOPIC, "my-topic");
+        kafkaHeaders.put("EventId", UUID.fromString("12300000-0000-0000-0000-000000000001"));
+        kafkaHeaders.put("EventTime", System.currentTimeMillis());
+//        kafkaHeaders.put("EventTime", "01-01-2025");
+        kafkaHeaders.put("OriginSystemCode", "test-FP");
+        kafkaHeaders.put("EventType", "payment.change.status");
+        kafkaHeaders.put("WebhookSubscriptionId", UUID.fromString("00000000-0000-0000-0000-000000000000"));
+        kafkaHeaders.put("DigitalId", "digital-id-1");
+        kafkaHeaders.put("EpkOrgId", 999L);
+        kafkaHeaders.put("ClientId", "client-id-1");
 
-        Message<String> message = MessageBuilder.createMessage(SMALL_PAYLOAD, new MessageHeaders(kafkaHeaders));
+        String payload = "{\"externalId\": \"00000000-0000-0000-0000-000000000000\"}";
+//        String payload = "1";
+        Message<String> message = MessageBuilder.createMessage(payload, new MessageHeaders(kafkaHeaders));
         kafkaTemplate.send(message);
         kafkaTemplate.flush();
     }
