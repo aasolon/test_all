@@ -1,14 +1,20 @@
 package com.example.testall.resttemplate;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.hc.client5.http.config.ConnectionConfig;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
+import org.apache.hc.core5.util.Timeout;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.concurrent.TimeUnit;
 
 public class SimpleRestTemplateMain {
 
@@ -33,17 +39,23 @@ public class SimpleRestTemplateMain {
 //        connectionManager.setMaxTotal(100);
 //        connectionManager.setDefaultMaxPerRoute(20);
 
-        HttpClient httpClient = HttpClientBuilder.create()
-//                .setConnectionManager(connectionManager)
-                .setDefaultRequestConfig(
-                        RequestConfig.custom()
-                                .setConnectTimeout(60 * 1000)
-                                .setConnectionRequestTimeout(30 * 1000)
-                                .setSocketTimeout(60 * 1000)
-                                .build()
-                )
+        ConnectionConfig connConfig = ConnectionConfig.custom()
+                .setConnectTimeout(60, TimeUnit.SECONDS)
+                .setSocketTimeout(60, TimeUnit.SECONDS)
+                .build();
+        PoolingHttpClientConnectionManager connectionManager = PoolingHttpClientConnectionManagerBuilder.create()
+                .setDefaultConnectionConfig(connConfig)
                 .setMaxConnPerRoute(2)
                 .setMaxConnTotal(5)
+                .build();
+        RequestConfig requestConfig = RequestConfig.custom()
+                .setConnectionRequestTimeout(Timeout.ofMilliseconds(30 * 1000))
+                .build();
+
+        CloseableHttpClient httpClient = HttpClientBuilder
+                .create()
+                .setConnectionManager(connectionManager)
+                .setDefaultRequestConfig(requestConfig)
                 .build();
 
         ClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);

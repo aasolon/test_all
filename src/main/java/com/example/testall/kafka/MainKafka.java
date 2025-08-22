@@ -26,18 +26,31 @@ public class MainKafka {
 
         Map<String, Object> kafkaHeaders = new HashMap<>();
 //        kafkaHeaders.put(KafkaHeaders.TOPIC, "CI02591035CORPAPI.RESPONSEEVENT.V1");
-        kafkaHeaders.put(KafkaHeaders.TOPIC, "my-topic");
+        kafkaHeaders.put(KafkaHeaders.TOPIC, "CI03151766SENDER.WEBHOOKEVENT.V1");
         kafkaHeaders.put("EventId", UUID.fromString("12300000-0000-0000-0000-000000000001"));
         kafkaHeaders.put("EventTime", System.currentTimeMillis());
 //        kafkaHeaders.put("EventTime", "01-01-2025");
         kafkaHeaders.put("OriginSystemCode", "test-FP");
-        kafkaHeaders.put("EventType", "payment.change.status");
-        kafkaHeaders.put("WebhookSubscriptionId", UUID.fromString("00000000-0000-0000-0000-000000000000"));
-        kafkaHeaders.put("DigitalId", "digital-id-1");
+        kafkaHeaders.put("EventType", "payment.final_statuses");
+        kafkaHeaders.put("WebhookSubscriptionId", UUID.fromString("123d3bbf-eed8-4135-8b66-2e78c5b28cdb"));
+        kafkaHeaders.put("DigitalId", "123321");
         kafkaHeaders.put("EpkOrgId", 999L);
         kafkaHeaders.put("ClientId", "client-id-1");
 
-        String payload = "{\"externalId\": \"00000000-0000-0000-0000-000000000000\"}";
+//        String payload = "{\"externalId\": \"00000000-0000-0000-0000-000000000000\"}";
+        String payload = "{\n" +
+                "  \"int_1\": 111,\n" +
+                "  \"string_1\": \"aaa\",\n" +
+                "  \"object_1\": {\n" +
+                "    \"int_2\": 222,\n" +
+                "    \"string_2\": \"bbb\",\n" +
+                "    \"object_2\": {\n" +
+                "      \"int_3\": 333,\n" +
+                "      \"string_3\": \"ccc\",\n" +
+                "      \"array_3\": [\"1\", \"2\"]\n" +
+                "    }\n" +
+                "  }\n" +
+                "}";
 //        String payload = "1";
         Message<String> message = MessageBuilder.createMessage(payload, new MessageHeaders(kafkaHeaders));
         kafkaTemplate.send(message);

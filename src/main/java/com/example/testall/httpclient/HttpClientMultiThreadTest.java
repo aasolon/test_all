@@ -1,34 +1,45 @@
 package com.example.testall.httpclient;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.util.EntityUtils;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.config.ConnectionConfig;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.apache.hc.core5.util.Timeout;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 public class HttpClientMultiThreadTest {
 
     public static void main(String[] args) throws InterruptedException {
-        CloseableHttpClient client = HttpClientBuilder
-                .create()
-                .setDefaultRequestConfig(
-                        RequestConfig.custom()
-                                .setConnectTimeout(60 * 1000)
-                                .setConnectionRequestTimeout(30 * 1000)
-                                .setSocketTimeout(60 * 1000)
-                                .build()
-                )
+        ConnectionConfig connConfig = ConnectionConfig.custom()
+                .setConnectTimeout(60, TimeUnit.SECONDS)
+                .setSocketTimeout(60, TimeUnit.SECONDS)
+//                .setTimeToLive(5, TimeUnit.SECONDS) // время жизни соединения в пуле, контролируемое исключительно на стороне клиента
+//                .setValidateAfterInactivity(5, TimeUnit.SECONDS) // раньше перед выдачей соединения из пула оно всегда проверялось,
+                // а теперь оно проверяется только если прошло больше указанного кол-ва  ms
+                .build();
+        PoolingHttpClientConnectionManager connectionManager = PoolingHttpClientConnectionManagerBuilder.create()
+                .setDefaultConnectionConfig(connConfig)
                 .setMaxConnPerRoute(2)
                 .setMaxConnTotal(2)
-//                .setConnectionTimeToLive(5, TimeUnit.SECONDS) // время жизни соединения в пуле, контролируемое исключительно на стороне клиента
-//                .evictIdleConnections(5, TimeUnit.SECONDS) // если соединение простаивало какое-то время (пусть даже и не закрыто сервером), то оно будет закрыто
+                .build();
+        RequestConfig requestConfig = RequestConfig.custom()
+                .setConnectionRequestTimeout(Timeout.ofMilliseconds(30 * 1000))
+                .build();
+
+        CloseableHttpClient client = HttpClientBuilder
+                .create()
+                .setConnectionManager(connectionManager)
+                .setDefaultRequestConfig(requestConfig)
+//                .evictIdleConnections(TimeValue.ofSeconds(5)) // если соединение простаивало какое-то время (пусть даже и не закрыто сервером), то оно будет закрыто
 //                .evictExpiredConnections() // если соединение было разорвано на стороне сервера, то оно будет закрыто (при этом время по умолчанию 10 сек или же берется из evictIdleConnections),
-                                           // при этом простаивающие соединения не афектятся
-                // PoolingHttpClientConnectionManager.setValidateAfterInactivity раньше перед выдачей соединения из пула оно всегда проверялось,
-                                                                              // а теперь оно проверяется только если прошло больше указанного кол-ва  ms
+//                                            при этом простаивающие соединения не афектятся
                 .build();
 
         HttpGet get1 = new HttpGet("http://localhost:8081/hello");
@@ -60,7 +71,7 @@ public class HttpClientMultiThreadTest {
         public void run() {
             try {
                 System.out.println(Thread.currentThread().getName() + " prepare make request");
-                HttpResponse response = client.execute(get);
+                CloseableHttpResponse response = client.execute(get);
                 System.out.println(Thread.currentThread().getName() + " made request");
                 Thread.sleep( 20 * 1000);
                 System.out.println(Thread.currentThread().getName() + " wake up");

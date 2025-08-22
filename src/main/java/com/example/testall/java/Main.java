@@ -2,6 +2,7 @@ package com.example.testall.java;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.net.InternetDomainName;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
 
@@ -11,6 +12,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
@@ -32,8 +35,10 @@ public class Main {
     private static final FastDateFormat DATE_TIME_FORMAT = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss.SSS");
 
 
-    public static void main(String[] args) throws IOException, ClassNotFoundException {
-        testUpgVersionSublist();
+    public static void main(String[] args) throws IOException, ClassNotFoundException, URISyntaxException {
+        testParseUrl();
+
+//        testUpgVersionSublist();
 
 //        testJavaSerialization();
 
@@ -60,6 +65,30 @@ public class Main {
 //        testComparator2();
 
         int i1 = 0;
+    }
+
+    private static void testParseUrl() throws URISyntaxException {
+        String forbiddenDomainsStr = "localhost,127.0.0.1,sberbank.ru";
+//        String forbiddenDomainsStr = "localhost,127.0.0.1,sberbank.ru";
+        String[] forbiddenDomains = forbiddenDomainsStr.split(",");
+
+//        String urlString = "https://a.b.test.Sberbank.ru:8080/mvc";
+//        String urlString = "https://asd.basda.test.Sberbank.com:8080/mvc";
+        String urlString = "https://127.0.0.1:8080/mvc";
+//        String urlString = "https://x.adwords.google.co.uk:8080/mvc";
+//        String urlString = "https://localhost:8080/mvc";
+
+        URI uri = new URI(urlString);
+        String host = uri.getHost();
+        if (Arrays.stream(forbiddenDomains).anyMatch(host::equalsIgnoreCase)) {
+            throw new IllegalArgumentException("1");
+        }
+        String hostTopPrivateDomain = InternetDomainName.from(host).topPrivateDomain().toString();
+        if (Arrays.stream(forbiddenDomains).anyMatch(forbiddenDomain -> hostTopPrivateDomain.equalsIgnoreCase(forbiddenDomain))) {
+            throw new IllegalArgumentException("1");
+        }
+
+        int i = 0;
     }
 
     private static void testUpgVersionSublist() {

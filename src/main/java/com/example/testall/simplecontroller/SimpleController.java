@@ -1,11 +1,15 @@
 package com.example.testall.simplecontroller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.config.ConnectionConfig;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +25,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,24 +44,35 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 public class SimpleController {
 
     private static final Logger log = LoggerFactory.getLogger(SimpleController.class);
 
-    CloseableHttpClient client = HttpClientBuilder
-            .create()
-            .setDefaultRequestConfig(
-                    RequestConfig.custom()
-                            .setConnectTimeout(60 * 1000)
-                            .setConnectionRequestTimeout(5 * 1000)
-                            .setSocketTimeout(60 * 1000)
-                            .build()
-            )
-            .setMaxConnPerRoute(2)
-            .setMaxConnTotal(2)
-            .build();
+    private static final CloseableHttpClient client;
+
+    static {
+        ConnectionConfig connConfig = ConnectionConfig.custom()
+                .setConnectTimeout(60, TimeUnit.SECONDS)
+                .setSocketTimeout(60, TimeUnit.SECONDS)
+                .build();
+        PoolingHttpClientConnectionManager connectionManager = PoolingHttpClientConnectionManagerBuilder.create()
+                .setDefaultConnectionConfig(connConfig)
+                .setMaxConnPerRoute(2)
+                .setMaxConnTotal(2)
+                .build();
+        RequestConfig requestConfig = RequestConfig.custom()
+                .setConnectionRequestTimeout(5, TimeUnit.SECONDS)
+                .build();
+
+        client = HttpClientBuilder
+                .create()
+                .setConnectionManager(connectionManager)
+                .setDefaultRequestConfig(requestConfig)
+                .build();
+    }
 
     @Autowired
     private RestTemplate commonRestTemplate;
@@ -90,7 +104,7 @@ public class SimpleController {
         log.info(" /hello_2 received request");
 
         HttpGet get = new HttpGet("http://localhost:8081/hello_with_sleep");
-        HttpResponse response = client.execute(get);
+        CloseableHttpResponse response = client.execute(get);
 
         return IOUtils.toString(response.getEntity().getContent(), StandardCharsets.UTF_8);
     }

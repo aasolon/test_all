@@ -10,8 +10,6 @@ import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.support.MessageBuilder;
-import org.springframework.util.concurrent.ListenableFuture;
-import org.springframework.util.concurrent.ListenableFutureCallback;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,6 +17,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 public class KafkaController {
@@ -51,19 +50,16 @@ public class KafkaController {
                 .setHeader("objectHeader", new ObjectMapper().writeValueAsBytes(objectHeader))
 //                .setHeader("objectHeader", SerializationUtils.serialize(objectHeader))
                 .build();
-        ListenableFuture<SendResult<String, String>> future = testAllKafkaTemplate.send(message);
-        future.addCallback(new KafkaLoggingCallback<>(text));
-        future.addCallback(new ListenableFutureCallback<>() {
-            @Override
-            public void onFailure(Throwable ex) {
+        CompletableFuture<SendResult<String, String>> future = testAllKafkaTemplate.send(message);
+        future.whenComplete(new KafkaLoggingBiConsumer<>(text));
+        future.whenComplete((SendResult<String, String> result, Throwable ex) -> {
+            if (ex != null) {
                 int i = 0;
-                ListenableFuture<SendResult<String, String>> send = testAllKafkaTemplate.send(MessageBuilder.createMessage("", message.getHeaders()));
-                send.addCallback(new KafkaLoggingCallback<>(text));
-            }
-
-            @Override
-            public void onSuccess(SendResult<String, String> result) {
+            } else {
                 int i = 0;
+                CompletableFuture<SendResult<String, String>> send = testAllKafkaTemplate
+                        .send(MessageBuilder.createMessage("", message.getHeaders()));
+                send.whenComplete(new KafkaLoggingBiConsumer<>(text));
             }
         });
     }

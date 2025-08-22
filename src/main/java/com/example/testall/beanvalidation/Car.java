@@ -1,6 +1,6 @@
 package com.example.testall.beanvalidation;
 
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 public class Car {
 

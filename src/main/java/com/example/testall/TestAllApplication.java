@@ -11,7 +11,7 @@ import org.springframework.context.annotation.ImportResource;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.multipart.commons.CommonsMultipartResolver;
+//import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 @SpringBootApplication
 @EnableAsync
@@ -45,11 +45,11 @@ public class TestAllApplication {
         return new RestTemplate();
     }
 
-    @Bean(name = "multipartResolver")
-    public CommonsMultipartResolver multipartResolver() {
-        CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
-        return multipartResolver;
-    }
+//    @Bean(name = "multipartResolver")
+//    public CommonsMultipartResolver multipartResolver() {
+//        CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
+//        return multipartResolver;
+//    }
 
 //    @Bean
 //    public IgniteConfigurer nodeConfigurer() {
