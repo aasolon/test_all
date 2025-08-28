@@ -1,0 +1,956 @@
+openapi: 3.0.2
+info:
+  title: API по рублёвым платёжным поручения
+  version: 1.0.0
+
+servers:
+  - url: 'http://localhost:8080'
+    description: Локальный сервер
+
+tags:
+  - name: payments
+    description: Рублёвые платежные поручения
+
+paths:
+  /v1/payments:
+    post:
+      tags:
+        - payments
+      summary: Создание рублёвого платёжного поручения
+      operationId: createPayment
+      requestBody:
+        description: Платёжное поручение
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FintechPaymentIncoming'
+        required: true
+      responses:
+        '201':
+          description: Успешный запрос перевода
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FintechPayment'
+        '202':
+          description: Операция не завершена полностью
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FintechWorkflowFault'
+        '400':
+          description: "Ошибка в запросе"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FintechWorkflowFault'
+        '401':
+          description: "Не авторизован"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FintechWorkflowFault'
+        '403':
+          description: "Операция не может быть выполнена: доступ к ресурсу запрещён"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FintechWorkflowFault'
+        '429':
+          description: "Превышен лимит запросов"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FintechWorkflowFault'
+        '500':
+          description: "Внутренняя ошибка сервера"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FintechWorkflowFault'
+        '503':
+          description: "Сервис временно недоступен"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FintechWorkflowFault'
+
+  /v1/payments/from-invoice:
+    post:
+      tags:
+        - payments
+      summary: Выставление счёта на оплату по фиксированным реквизитам
+      operationId: createPaymentFromInvoice
+      requestBody:
+        description: Счёт на оплату по фиксированным реквизитам
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FintechInvoice'
+        required: true
+      responses:
+        '201':
+          description: Успешный запрос перевода
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FintechPayment'
+        '400':
+          description: "Ошибка в запросе"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FintechWorkflowFault'
+        '401':
+          description: "Не авторизован"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FintechWorkflowFault'
+        '403':
+          description: "Операция не может быть выполнена: доступ к ресурсу запрещён"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FintechWorkflowFault'
+        '429':
+          description: "Превышен лимит запросов"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FintechWorkflowFault'
+        '500':
+          description: "Внутренняя ошибка сервера"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FintechWorkflowFault'
+        '503':
+          description: "Сервис временно недоступен"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FintechWorkflowFault'
+
+  /v1/payments/from-invoice-any:
+    post:
+      tags:
+        - payments
+      summary: Выставление счёта на оплату по свободным реквизитам
+      operationId: createPaymentFromInvoiceAny
+      requestBody:
+        description: Счёт на оплату по свободным реквизитам
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FintechInvoiceAny'
+        required: true
+      responses:
+        '201':
+          description: Успешный запрос перевода
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FintechPayment'
+        '400':
+          description: "Ошибка в запросе"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FintechWorkflowFault'
+        '401':
+          description: "Не авторизован"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FintechWorkflowFault'
+        '403':
+          description: "Операция не может быть выполнена: доступ к ресурсу запрещён"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FintechWorkflowFault'
+        '429':
+          description: "Превышен лимит запросов"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FintechWorkflowFault'
+        '500':
+          description: "Внутренняя ошибка сервера"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FintechWorkflowFault'
+        '503':
+          description: "Сервис временно недоступен"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FintechWorkflowFault'
+
+  /v1/payments/from-invoice-budget:
+    post:
+      tags:
+        - payments
+      summary: Выставление счёта на оплату в бюджет
+      operationId: createPaymentFromInvoiceBudget
+      requestBody:
+        description: Счёт на оплату в бюджет
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FintechInvoiceBudget'
+        required: true
+      responses:
+        '201':
+          description: Успешный запрос перевода
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FintechPayment'
+        '400':
+          description: "Ошибка в запросе"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FintechWorkflowFault'
+        '401':
+          description: "Не авторизован"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FintechWorkflowFault'
+        '403':
+          description: "Операция не может быть выполнена: доступ к ресурсу запрещён"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FintechWorkflowFault'
+        '429':
+          description: "Превышен лимит запросов"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FintechWorkflowFault'
+        '500':
+          description: "Внутренняя ошибка сервера"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FintechWorkflowFault'
+        '503':
+          description: "Сервис временно недоступен"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FintechWorkflowFault'
+
+  /v1/payments/{externalId}/state:
+    get:
+      tags:
+        - payments
+      summary: Получение статуса рублёвого платёжного поручения
+      operationId: getPaymentState
+      parameters:
+        - in: path
+          name: externalId
+          schema:
+            type: string
+          description: Внешний UUID платежного поручения
+          required: true
+      responses:
+        '200':
+          description: Успешный запрос перевода
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FintechPaymentDocState'
+        '400':
+          description: "Ошибка в запросе"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FintechWorkflowFault'
+        '401':
+          description: "Не авторизован"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FintechWorkflowFault'
+        '403':
+          description: "Операция не может быть выполнена: доступ к ресурсу запрещён"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FintechWorkflowFault'
+        '404':
+          description: Не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FintechWorkflowFault'
+        '429':
+          description: "Превышен лимит запросов"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FintechWorkflowFault'
+        '500':
+          description: "Внутренняя ошибка сервера"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FintechWorkflowFault'
+        '503':
+          description: "Сервис временно недоступен"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FintechWorkflowFault'
+
+  /v1/payments/{externalId}:
+    get:
+      tags:
+        - payments
+      summary: Получение платёжного поручения
+      operationId: getPayment
+      parameters:
+        - in: path
+          name: externalId
+          schema:
+            type: string
+          description: Внешний UUID платежного поручения
+          required: true
+      responses:
+        '200':
+          description: Успешный запрос перевода
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FintechPayment'
+        '400':
+          description: "Ошибка в запросе"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FintechWorkflowFault'
+        '401':
+          description: "Не авторизован"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FintechWorkflowFault'
+        '403':
+          description: "Операция не может быть выполнена: доступ к ресурсу запрещён"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FintechWorkflowFault'
+        '404':
+          description: Не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FintechWorkflowFault'
+        '429':
+          description: "Превышен лимит запросов"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FintechWorkflowFault'
+        '500':
+          description: "Внутренняя ошибка сервера"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FintechWorkflowFault'
+        '503':
+          description: "Сервис временно недоступен"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FintechWorkflowFault'
+
+components:
+  schemas:
+    FintechPayment:
+      type: object
+      title: Payment
+      description: Рублёвое платёжное поручение
+      required:
+        - date
+        - externalId
+        - amount
+        - operationCode
+        - priority
+        - purpose
+        - payerName
+        - payerInn
+        - payerAccount
+        - payerBankBic
+        - payerBankCorrAccount
+        - payeeName
+        - payeeBankBic
+      properties:
+        number:
+          type: string
+          description: Номер документа
+          example: 1
+        date:
+          type: string
+          format: date
+          nullable: false
+          description: Дата составления документа
+          example: '2018-12-31'
+        digestSignatures:
+          type: array
+          items:
+            $ref: '#/components/schemas/FintechSignature'
+          description: Электронные подписи по дайджесту документа
+        bankStatus:
+          type: string
+          description: Статус документа
+        bankComment:
+          type: string
+          description: Банковский комментарий к статусу документа
+        externalId:
+          type: string
+          format: uuid
+          nullable: false
+          description: Идентификатор документа, присвоенный партнёром (UUID)
+          example: "22a6dd81-103a-4d3a-8e9b-0ba4b527f5f6"
+        amount:
+          type: number
+          nullable: false
+          default: "0"
+          description: Сумма платежа
+          example: '1.01'
+        operationCode:
+          type: string
+          pattern: "^01$"
+          nullable: false
+          description: Код операции
+          example: "01"
+        deliveryKind:
+          type: string
+          pattern: "^(электронно|срочно|0)"
+          nullable: false
+          description: Идентификатор документа, присвоенный партнёром (UUID)
+          example: "электронно"
+        priority:
+          type: string
+          nullable: false
+          pattern: "^[1-5]{1}$"
+          description: Очерёдность платежа
+          example: "5"
+        urgencyCode:
+          $ref: '#/components/schemas/UrgencyCode'
+        voCode:
+          type: string
+          pattern: "^[0-9]{5}$"
+          description: Код вида валютной операции
+          example: "61150"
+        purpose:
+          type: string
+          description: Назначение платежа
+          nullable: false
+          maxLength: 210
+          example: "Оплата заказа №123. НДС нет."
+        departmentalInfo:
+          $ref: '#/components/schemas/FintechDepartmentalInfo'
+        payerName:
+          type: string
+          maxLength: 254
+          nullable: false
+          description: Полное наименование плательщика
+        #          example: Общество с ограниченной ответственностью Клиент
+        payerInn:
+          type: string
+          pattern: "^([0-9]{5}|[0-9]{10}|[0-9]{12}|0)$"
+          nullable: false
+          description: ИНН плательщика
+          example: "7707083893"
+        payerKpp:
+          type: string
+          pattern: "^([0-9]{9}|0)$"
+          description: КПП плательщика
+          example: "222201001"
+        payerAccount:
+          type: string
+          pattern: "^[0-9]{20}$"
+          nullable: false
+          description: Счёт плательщика
+          example: "40802810600000200000"
+        payerBankBic:
+          type: string
+          pattern: "^[0-9]{9}$"
+          nullable: false
+          description: БИК банка плательщика
+          example: "044525225"
+        payerBankCorrAccount:
+          type: string
+          pattern: "^[0-9]{20}$"
+          nullable: false
+          description: Корсчёт банка плательщика
+          example: "30101810400000000225"
+        payeeName:
+          type: string
+          maxLength: 254
+          nullable: false
+          description: Полное наименование получателя платежа
+        #          example: 'Общество с ограниченной ответственностью "Клиент"'
+        payeeInn:
+          type: string
+          pattern: "^([0-9]{5}|[0-9]{10}|[0-9]{12}|0)$"
+          description: ИНН получателя платежа
+          example: "7707083893"
+        payeeKpp:
+          type: string
+          pattern: "^([0-9]{9}|0)$"
+          description: КПП получателя платежа
+          example: "222201001"
+        payeeAccount:
+          type: string
+          pattern: "^[0-9]{20}$"
+          description: Счёт получателя платежа
+          example: "40802810600000200000"
+        payeeBankBic:
+          type: string
+          pattern: "^[0-9]{9}$"
+          nullable: false
+          description: БИК получателя платежа
+          example: "044525225"
+        payeeBankCorrAccount:
+          type: string
+          pattern: "^[0-9]{20}$"
+          description: Корсчёт банка получателя платежа
+          example: "30101810400000000225"
+        crucialFieldsHash:
+          type: string
+          description: Hash от ключевых полей документа
+        vat:
+          $ref: '#/components/schemas/FintechVat'
+        incomeTypeCode:
+          type: string
+          maxLength: 2
+          description: Код вида дохода получателей выплаты по 229-ФЗ
+          example: "2"
+
+    FintechPaymentIncoming:
+      allOf:
+        - $ref: '#/components/schemas/FintechPayment'
+        - type: object
+          title: Invoice
+          description: Рублёвое платёжное поручение
+          properties:
+            isPaidByCredit:
+              type: boolean
+              description: Признак того, что платёжное поручение будет оплачено за счёт кредитных средств
+              example: "true"
+            creditContractNumber:
+              type: string
+              description: Номер кредитного договора
+              example: "2020/66556"
+              maxLength: 50
+
+    FintechCommonInvoice:
+      type: object
+      title: CommonInvoice
+      description: Счёт на оплату - общая часть документарных моделей
+      required:
+        - externalId
+        - date
+        - amount
+        - purpose
+        - payeeAccount
+      properties:
+        externalId:
+          type: string
+          format: uuid
+          nullable: false
+          description: Идентификатор документа, присвоенный партнёром (UUID)
+          example: "22a6dd81-103a-4d3a-8e9b-0ba4b527f5f6"
+        paymentNumber:
+          type: string
+          description: Номер платёжного поручения
+          example: "1"
+        date:
+          type: string
+          format: date
+          nullable: false
+          description: Дата составления документа
+          example: "2018-12-31"
+        amount:
+          type: number
+          nullable: false
+          default: "0"
+          description: Сумма платежа
+          example: "1.01"
+        operationCode:
+          type: string
+          description: Код операции
+          pattern: "^01$"
+          default: "01"
+          example: "01"
+        deliveryKind:
+          type: string
+          description: Вид платежа
+          pattern: "^(электронно|срочно|0)$"
+          nullable: false
+          example: "электронно"
+        priority:
+          type: string
+          default: "5"
+          pattern: "^[4-5]{1}$"
+          description: Очерёдность платежа
+          example: "5"
+        urgencyCode:
+          $ref: '#/components/schemas/UrgencyCode'
+        purpose:
+          type: string
+          description: Назначение платежа
+          nullable: false
+          maxLength: 210
+          example: "Оплата заказа №123. НДС нет."
+        payeeAccount:
+          type: string
+          pattern: "^[0-9]{20}$"
+          nullable: false
+          description: Счёт получателя платежа
+          example: "40802810600000200000"
+        vat:
+          $ref: "#/components/schemas/FintechVat"
+        linkedDocs:
+          type: array
+          items:
+            $ref: "#/components/schemas/FintechLinkedDoc"
+          description: Связанные документы
+
+    FintechInvoice:
+      allOf:
+        - $ref: '#/components/schemas/FintechCommonInvoice'
+        - type: object
+          title: Invoice
+          description: Счёт на оплату по фиксированным реквизитам
+          properties:
+            payeeOrgIdHash:
+              type: string
+              pattern: "^[0-9a-f]{64}$"
+              description: Идентификатор получателя платежа
+            expirationDate:
+              type: string
+              format: date-time
+              description: Дата истечения заказа (платёж должен быть подтверждён клиентом)
+              example: "2018-12-31"
+            orderNumber:
+              type: string
+              description: Номер заказа
+              example: "123"
+
+    FintechInvoiceDetails:
+      allOf:
+        - $ref: '#/components/schemas/FintechCommonInvoice'
+        - type: object
+          title: InvoiceDetails
+          description: Счёт на оплату по реквизитам
+          required:
+            - payeeBankBic
+            - payeeInn
+            - payeeName
+          properties:
+            payeeBankBic:
+              type: string
+              nullable: false
+              pattern: "^[0-9]{9}$"
+              description: БИК банка получателя платежа
+              example: "044525225"
+            payeeBankCorrAccount:
+              type: string
+              pattern: "^[0-9]{20}$"
+              description: Кор. счёт банка получателя платежа
+              example: "30101810400000000225"
+            payeeInn:
+              type: string
+              pattern: "^([0-9]{5}|[0-9]{10}|[0-9]{12}|0)$"
+              nullable: false
+              description: ИНН получателя платежа
+              example: "7707083893"
+            payeeKpp:
+              type: string
+              pattern: "^([0-9]{9}|0)$"
+              description: КПП получателя платежа
+              example: "222201001"
+            payeeName:
+              type: string
+              description: Наименование получателя платежа
+              maxLength: 254
+        #          example: "Общество с ограниченной ответственностью \"Клиент\""
+
+    FintechInvoiceAny:
+      allOf:
+        - $ref: '#/components/schemas/FintechInvoiceDetails'
+        - type: object
+          title: InvoiceAny
+          description: Счёт на оплату по свободным реквизитам
+          properties:
+            expirationDate:
+              type: string
+              format: date-time
+              description: Дата истечения заказа (платёж должен быть подтверждён клиентом)
+              example: "2018-12-31"
+            orderNumber:
+              type: string
+              description: Номер заказа
+              example: "123"
+            isPaidByCredit:
+              type: boolean
+              description: Признак того, что платёжное поручение будет оплачено за счёт кредитных средств
+              example: "true"
+            creditContractNumber:
+              type: string
+              description: Номер кредитного договора
+              example: "2020/66556"
+
+    FintechDepartmentalInfo:
+      type: object
+      title: DepartmentalInfo
+      description: Реквизиты налогового, таможенного или иного бюджетного платежа
+      properties:
+        uip:
+          type: string
+          pattern: "[A-ZА-Я0-9/]+"
+          description: Уникальный идентификатор платежа
+          maxLength: 25
+          example: 0
+        drawerStatus101:
+          type: string
+          description: Показатель статуса налогоплательщика (реквизит - 101)
+          maxLength: 2
+          example: 01
+        kbk:
+          type: string
+          description: Код бюджетной классификации (реквизит - 104)
+          pattern: "([A-ZА-Я0-9]{1,20})$"
+          example: 18210102010011000110
+        oktmo:
+          type: string
+          description: Код OKTMO (реквизит - 105)
+          pattern: "(.{1,11})$"
+          example: 01701000
+        reasonCode106:
+          type: string
+          description: Показатель основания платежа (реквизит - 106)
+          maxLength: 2
+          example: "ТП"
+        taxPeriod107:
+          type: string
+          description: Налоговый период / код таможенного органа (реквизит - 107)
+          pattern: "^(0|[0-9]{8}|([0-9]{2}|МС|КВ|ПЛ|ГД)\\.[0-9]{2}\\.[0-9]{4})$"
+          example: "ГД.00.2018"
+        docNumber108:
+          type: string
+          description: Номер налогового документа (реквизит - 108)
+          maxLength: 15
+          example: 123
+        docDate109:
+          type: string
+          description: Дата налогового документа (реквизит - 109)
+          pattern: "^(0|00|[0-9]{2}\\.[0-9]{2}\\.[0-9]{4})$"
+          example: 31.12.2022
+        paymentKind110:
+          type: string
+          description: Тип налогового платежа (реквизит - 110)
+          maxLength: 2
+          example: ПН
+
+    FintechInvoiceBudget:
+      allOf:
+        - $ref: '#/components/schemas/FintechInvoiceDetails'
+        - type: object
+          title: InvoiceBudget
+          description: Счёт на оплату в бюджет
+          required:
+            - departmentalInfo
+          properties:
+            departmentalInfo:
+              $ref: '#/components/schemas/FintechDepartmentalInfo'
+            payerKpp:
+              type: string
+              pattern: "^([0-9]{9}|0)$"
+              description: КПП плательщика
+              example: "222201001"
+
+    FintechDocStateShort:
+      description: Сокращенный статус документа
+      type: object
+      title: DocStateShort
+      properties:
+        bankStatus:
+          type: string
+          description: Статус документа
+          example: PROCESSING
+        bankComment:
+          type: string
+          maxLength: 255
+          description: Банковский комментарий к статусу документа
+          example: Документ в обработке
+
+    FintechDocState:
+      description: Статус документа
+      type: object
+      title: DocState
+      allOf:
+        - $ref: '#/components/schemas/FintechDocStateShort'
+        - type: object
+          properties:
+            channelInfo:
+              type: string
+              title: Дополнительная информация
+              description: Комментарий, специфичный для документа, полученного по данному каналу
+
+    FintechPaymentDocState:
+      description: Статус документа
+      type: object
+      title: PaymentDocState
+      allOf:
+        - $ref: '#/components/schemas/FintechDocState'
+        - type: object
+          properties:
+            crucialFieldsHash:
+              type: string
+              description: Hash от ключевых полей документа
+
+    FintechLinkedDoc:
+      description: Связанные документы
+      type: object
+      required:
+        - docExtId
+        - type
+      properties:
+        docExtId:
+          type: string
+          #maxLength: 36
+          #pattern: ^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$
+          format: uuid
+          nullable: false
+          description: Идентификатор документа в организации-партнёре (UUID)
+          example: 31663ef5-7975-4016-b0f3-f1d70a4e9c22
+        type:
+          type: string
+          nullable: false
+          minLength: 1
+          maxLength: 50
+          description: Тип связанного документа
+
+    FintechSignature:
+      description: Электронная подпись
+      title: Signature
+      type: object
+      required:
+        - certificateUuid
+        - base64Encoded
+      properties:
+        certificateUuid:
+          type: string
+          format: uuid
+          description: Уникальный идентификатор сертификата ключа проверки электронной подписи (UUID)
+          example: 22a6dd81-103a-4d3a-8e9b-0ba4b527f5f6
+        base64Encoded:
+          type: string
+          nullable: false
+          minLength: 1
+          description: Значение электронной подписи, закодированное в Base64
+          example: HlaeIHXXEcGT1bFxo1NlpAzpr+kJ2IQrcxVdvDTep6xjsmD1FDb+6NIyLT+/T24S0mPfVCU75sieOMt71TBS7w==
+
+    FintechNotice:
+      description: Информационное сообщение об ошибке, сбое или предупреждение
+      type: object
+      title: Notice
+      properties:
+        cause:
+          type: string
+          description: Причина или основание сообщения
+        referenceId:
+          type: string
+          description: Уникальный идентификатор (UUID)
+        message:
+          type: string
+          description: Сообщение
+
+    FintechWorkflowFault:
+      description: Описание ошибки ресурса (ошибка в запросе или его жизненном цикле)
+      type: object
+      title: WorkflowFault
+      properties:
+        cause:
+          type: string
+          example: WORKFLOW_FAULT
+          description: Причина или основание ошибки
+        referenceId:
+          type: string
+          description: Уникальный идентификатор ошибки (UUID)
+        message:
+          type: string
+          description: Сообщение
+        checks:
+          type: array
+          description: Список проверок, приведших к ошибке
+          items:
+            $ref: '#/components/schemas/FintechCheck'
+        internalErrorCode:
+          description: Внутренний код ошибки
+          nullable: true
+          type: string
+
+    FintechCheck:
+      description: Результат проверки
+      type: object
+      title: Check
+      properties:
+        level:
+          type: string
+          description: Уровень результата
+          example: ERROR
+        message:
+          type: string
+          description: Сообщение
+        fields:
+          type: array
+          items:
+            type: string
+          description: Названия полей (при наличии связи с моделью)
+
+    FintechVat:
+      nullable: true
+      description: Данные НДС
+      type: object
+      title: Vat
+      required:
+        - type
+      properties:
+        type:
+          type: string
+          nullable: true
+          enum:
+            - INCLUDED
+            - ONTOP
+            - NO_VAT
+            - MANUAL
+          description: Способ расчета НДС
+          example: NO_VAT
+        rate:
+          type: string
+          pattern: ^(0|5|7|10|20)$
+          description: Ставка НДС
+          example: 10
+          nullable: true
+        amount:
+          type: number
+          description: Сумма НДС
+          example: 1.01
+          nullable: true
+
+    UrgencyCode:
+      type: string
+      description: Код срочности

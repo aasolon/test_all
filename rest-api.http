@@ -1,3 +1,6 @@
+GET http://localhost:9876/hello2
+
+###
 GET http://localhost:8082/download-file
 #Range: bytes=0-1
 ###
@@ -179,4 +182,58 @@ TextAAA
 --abcd--
 
 ###
-GET 185.149.245.40:9876/hello2
+POST http://localhost:9876/v1/payments
+Content-Type: application/json
+Authorization: Bearer 123321
+
+{
+  "number": "occaecat in elit",
+  "date": "1935-01-11",
+  "digestSignatures": [
+    {
+      "certificateUuid": "a44ebab9-2dea-d47f-e360-8e5659675740",
+      "base64Encoded": "labore dolor"
+    },
+    {
+      "certificateUuid": "26533dab-2cc2-cec3-b727-2f599f67d3bb",
+      "base64Encoded": "sunt ullamco"
+    }
+  ],
+  "bankStatus": "officia qui",
+  "bankComment": "velit in ut nisi ipsum",
+  "externalId": "3bbca2aa-0cf8-207a-b8bc-6e554485e700",
+  "amount": 61705369,
+  "operationCode": "01",
+  "deliveryKind": "электронно",
+  "priority": "3",
+  "urgencyCode": "esse Duis sit",
+  "voCode": "07048",
+  "purpose": "cupidatat ea",
+  "departmentalInfo": {
+    "voluptate310": "eiusmod ut do",
+    "drawerStatus101": "m",
+    "kbk": "29Q9GQAWWGC4NCGE64",
+    "reasonCode106": "n"
+  },
+  "payerName": "Duis cupidatat culpa commodo qui",
+  "payerInn": "344632710344",
+  "payerKpp": "364884750",
+  "payerAccount": "52072169266868372905",
+  "payerBankBic": "948736350",
+  "payerBankCorrAccount": "35430077892613671501",
+  "payeeName": "consequat occaecat adipisicing",
+  "payeeInn": "34347",
+  "payeeKpp": "0",
+  "payeeAccount": "70547945528139015843",
+  "payeeBankBic": "943113014",
+  "payeeBankCorrAccount": "47115436719069980870",
+  "crucialFieldsHash": "ullamco dolor pariatur ipsum Lorem",
+  "vat": {
+    "type": "NO_VAT",
+    "rate": "5",
+    "amount": 58097507
+  },
+  "incomeTypeCode": "n",
+  "isPaidByCredit": false,
+  "creditContractNumber": "minim"
+}

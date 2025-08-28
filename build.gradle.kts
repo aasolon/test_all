@@ -1,9 +1,14 @@
+import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
+
 plugins {
     `java-library`
+
 //    id("org.springframework.boot") version "2.5.15"
 //    id("io.spring.dependency-management") version "1.0.11.RELEASE"
     id("org.springframework.boot") version "3.5.4"
     id("io.spring.dependency-management") version "1.1.7"
+
+    id("org.openapi.generator") version "7.14.0"
 }
 
 java {
@@ -12,13 +17,8 @@ java {
 }
 
 repositories {
-//    maven {
-//        url "https://nexus.sigma.sbrf.ru/nexus/content/groups/public"
-//        allowInsecureProtocol = true
-//    }
-    mavenLocal()
-
     mavenCentral()
+    mavenLocal()
 }
 
 ext["h2.version"] = "1.4.197"
@@ -26,8 +26,9 @@ ext["h2.version"] = "1.4.197"
 dependencyManagement {
     imports {
         mavenBom(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
-        mavenBom("org.springframework.cloud:spring-cloud-dependencies:2020.0.4")
-        mavenBom("io.modelcontextprotocol.sdk:mcp-bom:0.11.2")
+        mavenBom("org.springframework.cloud:spring-cloud-dependencies:2025.0.0")
+        mavenBom("io.modelcontextprotocol.sdk:mcp-bom:0.11.3")
+//        mavenBom("org.springframework.ai:spring-ai-bom:1.0.1")
     }
 }
 
@@ -42,7 +43,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
-    implementation("org.springframework.cloud:spring-cloud-starter-sleuth")
+//    implementation("org.springframework.cloud:spring-cloud-starter-sleuth")
 
     implementation("org.apache.httpcomponents.client5:httpclient5")
     implementation("commons-io:commons-io:2.9.0")
@@ -74,14 +75,70 @@ dependencies {
     // раскомментировать, чтобы автоматом поднялся Ignnite
 //    implementation("org.apache.ignite:ignite-spring-boot-autoconfigure-ext:1.0.0")
 
+    // раскаментить для подключения Java SDK MCP, нужно так же раскаментить mavenBom("io.modelcontextprotocol.sdk:mcp-bom")
     implementation("io.modelcontextprotocol.sdk:mcp-spring-webmvc")
+    // раскаментить для подключения Spring AI MCP, нужно так же раскаментить mavenBom("org.springframework.ai:spring-ai-bom")
+//    implementation("org.springframework.ai:spring-ai-starter-mcp-server-webmvc")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+}
+
+val generatePaymentsClient by tasks.register<GenerateTask>("generatePaymentsClient") {
+    generatorName.set("java")
+    library.set("restclient")
+    inputSpec.set("$projectDir/src/main/resources/openapi/payments.yml")
+    outputDir.set("${layout.buildDirectory.get().asFile}/generated/openapi-client/payments")
+    apiPackage.set("ru.sberbank.pprb.sbbol.payments.api")
+    invokerPackage.set("ru.sberbank.pprb.sbbol.payments.client.invoker")
+    modelPackage.set("ru.sberbank.pprb.sbbol.payments.client.model")
+    generateModelDocumentation.set(false)
+    generateModelTests.set(false)
+    generateApiDocumentation.set(false)
+    generateApiTests.set(false)
+    configOptions.set(
+        mapOf(
+            "openApiNullable" to "false",
+            "documentationProvider" to "none"
+        )
+    )
+}
+
+val generatePaymentsServer by tasks.register<GenerateTask>("generatePaymentsServer") {
+    generatorName.set("spring")
+    inputSpec.set("$projectDir/src/main/resources/openapi/payments.yml")
+    outputDir.set("${layout.buildDirectory.get().asFile}/generated/openapi-server/payments")
+    apiPackage.set("ru.sberbank.pprb.sbbol.payments.server.api")
+    modelPackage.set("ru.sberbank.pprb.sbbol.payments.server.model")
+    configOptions.set(
+        mapOf(
+            "delegatePattern" to "true",
+            "useTags" to "true",
+            "interfaceOnly" to "true",
+            "openApiNullable" to "false",
+            "useSpringBoot3" to "true",
+            "annotationLibrary" to "none",
+            "documentationProvider" to "none"
+        )
+    )
+}
+
+java.sourceSets["main"].java {
+    srcDirs(
+        "${layout.buildDirectory.get().asFile}/generated/openapi-client/payments/src/main/java",
+        "${layout.buildDirectory.get().asFile}/generated/openapi-server/payments/src/main/java"
+    )
 }
 
 tasks {
     test {
         useJUnitPlatform()
+    }
+
+    compileJava {
+        dependsOn(
+            generatePaymentsClient,
+            generatePaymentsServer
+        )
     }
 }
 
