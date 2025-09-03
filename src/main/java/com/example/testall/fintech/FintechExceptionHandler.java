@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@RestControllerAdvice
+@RestControllerAdvice(basePackages = "com.example.testall.fintech")
 public class FintechExceptionHandler extends ResponseEntityExceptionHandler {
 
     @Override

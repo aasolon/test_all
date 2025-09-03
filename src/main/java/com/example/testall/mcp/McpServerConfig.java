@@ -9,6 +9,7 @@ import io.modelcontextprotocol.server.McpStatelessServerFeatures;
 import io.modelcontextprotocol.server.McpStatelessSyncServer;
 import io.modelcontextprotocol.server.transport.WebMvcStatelessServerTransport;
 import io.modelcontextprotocol.spec.McpSchema;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -353,12 +354,18 @@ public class McpServerConfig implements WebMvcConfigurer {
 
     private final ObjectMapper objectMapper = new ObjectMapper()
             .registerModule(new JavaTimeModule())
-            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);;
+            .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+
+    @Autowired
+    private McpContext mcpContext;
+
+    @Autowired
+    private McpHandlerInterceptor mcpHandlerInterceptor;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry
-                .addInterceptor(new McpHandlerInterceptor())
+                .addInterceptor(mcpHandlerInterceptor)
                 .addPathPatterns("/**");
     }
 
@@ -418,10 +425,11 @@ public class McpServerConfig implements WebMvcConfigurer {
                 .tool(McpSchema.Tool.builder()
                         .name("sbbol_create_payment")
                         .description("Создать платежное поручение в Сбербанке")
-                        .inputSchema(EMPTY_JSON_SCHEMA)
+                        .inputSchema(PAYMENT_LIGHT_JSON_SCHEMA)
                         .build())
                 .callHandler((ctx, request) -> {
                     FintechPaymentIncoming fintechPaymentIncoming = objectMapper.convertValue(request.arguments(), FintechPaymentIncoming.class);
+                    String authorizationHeader = mcpContext.getAuthorizationHeader();
                     FintechPayment payment = paymentsApi.createPayment(fintechPaymentIncoming);
                     String paymentJson;
                     try {

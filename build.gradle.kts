@@ -5,7 +5,7 @@ plugins {
 
 //    id("org.springframework.boot") version "2.5.15"
 //    id("io.spring.dependency-management") version "1.0.11.RELEASE"
-    id("org.springframework.boot") version "3.5.4"
+    id("org.springframework.boot") version "3.5.5"
     id("io.spring.dependency-management") version "1.1.7"
 
     id("org.openapi.generator") version "7.14.0"
@@ -27,6 +27,7 @@ dependencyManagement {
     imports {
         mavenBom(org.springframework.boot.gradle.plugin.SpringBootPlugin.BOM_COORDINATES)
         mavenBom("org.springframework.cloud:spring-cloud-dependencies:2025.0.0")
+        mavenBom("org.zalando:logbook-bom:3.12.2")
         mavenBom("io.modelcontextprotocol.sdk:mcp-bom:0.11.3")
 //        mavenBom("org.springframework.ai:spring-ai-bom:1.0.1")
     }
@@ -42,6 +43,7 @@ dependencies {
 //  TOMCAT
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("io.micrometer:micrometer-tracing-bridge-otel")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
 //    implementation("org.springframework.cloud:spring-cloud-starter-sleuth")
 
@@ -68,6 +70,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 
     implementation("org.springframework.kafka:spring-kafka")
+
+    implementation("org.zalando:logbook-spring-boot-starter")
 
 //    implementation("ru.sberbank.pprb.sbbol.digitalapi:services:DEV-SNAPSHOT")
 

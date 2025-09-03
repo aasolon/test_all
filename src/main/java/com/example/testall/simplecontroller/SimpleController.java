@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.BufferedReader;
@@ -342,5 +344,24 @@ public class SimpleController {
     @PostMapping("/webhook")
     public ResponseEntity getWithDateHeader(@RequestHeader HttpHeaders headers, @RequestBody Object body) {
         return ResponseEntity.internalServerError().build();
+    }
+
+    @GetMapping("/test-http-code-2")
+    public ResponseEntity testHttpCode2() {
+        return ResponseEntity.status(298).build();
+//        return ResponseEntity.status(555).build();
+    }
+
+    @GetMapping("/test-http-code")
+    public void testHttpCode() {
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<String> responseEntity;
+        try {
+            responseEntity = restTemplate.getForEntity("http://localhost:9876/test-http-code-2", String.class);
+            HttpStatusCode statusCode = responseEntity.getStatusCode();
+        } catch (RestClientResponseException ex) {
+            int i = 0;
+        }
+        int i = 0;
     }
 }

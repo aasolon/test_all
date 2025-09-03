@@ -1,10 +1,13 @@
 @sessionId=c89be076-47ba-48ec-a4fd-747e03ebcd43
 
 ###
+GET http://localhost:9876/.well-known/oauth-protected-resource
+
+###
 GET http://localhost:9876/sse
 
 ###
-POST http://localhost:9876/mcp/message?sessionId={{sessionId}}
+POST http://localhost:9876/mcp
 Content-Type: application/json
 Accept: application/json, text/event-stream
 
@@ -68,6 +71,7 @@ POST http://localhost:9876/mcp
 Content-Type: application/json
 Accept: application/json, text/event-stream
 Authorization: Bearer 123321
+X-Request-Id: 555777
 
 {
   "jsonrpc": "2.0",
